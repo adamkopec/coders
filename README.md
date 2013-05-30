@@ -4,14 +4,14 @@ Coders
 Coders - Materiały do warsztatów
 
 
-# ADT
+## ADT
 Przykład wprowadzenia abstrakcyjnego typu danych w celu poprawy czytelności i zwiększenia spójności
 
-# Complexity
+## Complexity
 Dwa przykłady na redukowanie (problem.php) i izolowanie (problem2.php) złożoności przez wprowadzenie nowych klas
 
-# Parameters
+## Parameters
 Przykład redukowania ogromnej listy parametrów przez wprowadzanie nowych klas
 
-# LimitScope
+## LimitScope
 Przykład na zredukowanie wpływu lokalnej zmiany na cały projekt przez wprowadzenie nowego systemu klas
