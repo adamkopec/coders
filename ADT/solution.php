@@ -41,7 +41,17 @@ class communication_Model_Communication
     }
 }
 
-class DiscountCodeSender {
+class DiscountCodeSender
+{
+    protected $service;
+
+    public function __construct($service = null) {
+        if (!is_null($service)) {
+            $this->service = $service;
+        } else {
+            $this->service = new Empathy_Discount_Model_Default;
+        }
+    }
 
     public function sendCodeForPerson(EicPerson $oEicPerson)
     {
@@ -49,12 +59,12 @@ class DiscountCodeSender {
 
         $userId = $oEicPerson->prs_usr_id;
 
-        $oDiscountCode = Empathy_Discount_Model_Default::genCodeForNewUser($userId, $proc, true, EicDiscountCode::TYPE_NONEWSLETTER);
+        $oDiscountCode = $this->service->genCodeForNewUser($userId, $proc, true, EicDiscountCode::TYPE_NONEWSLETTER);
 
         $personId = $oEicPerson->prs_id;
 
         //wysyłka maila z przyznanym kodem
-        Empathy_Discount_Model_Default::sendMailWithCode($personId, ModelUser::getCurrentUserEmail(), $oDiscountCode->edc_token, $proc, 'nonewsletter');
+        $this->service->sendMailWithCode($personId, ModelUser::getCurrentUserEmail(), $oDiscountCode->edc_token, $proc, 'nonewsletter');
     }
 
     protected function _getPercentValue()
