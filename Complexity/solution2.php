@@ -23,9 +23,13 @@ class TreeWalker {
     }
 
     public function walk() {
-        $this->strategy->execute($this);
+        return $this->strategy->execute($this);
     }
 
+}
+
+interface Strategy {
+    public function execute();
 }
 
 class VeryComplexStrategy implements Strategy {
@@ -71,8 +75,6 @@ class VeryComplexStrategy implements Strategy {
     {
         return $this->segmentId;
     }
+
 }
 
-public interface Strategy {
-    public function execute();
-}
