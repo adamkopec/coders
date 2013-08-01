@@ -28,8 +28,7 @@ interface Filter
     public function apply(Query $query);
 }
 
-class Filter_DateLessThan implements Filter
-{
+abstract class Filter_AbstractDateFilter implements Filter {
 
     protected $format = 'Y-m-d'; //setFormat/getFormat omitted
     /** @var DateTime */
@@ -39,10 +38,21 @@ class Filter_DateLessThan implements Filter
     {
         $this->date = $date;
     }
+}
 
+class Filter_DateLessThan extends Filter_AbstractDateFilter
+{
     public function apply(Query $query)
     {
         $query->where('Order.date < ?', $this->date->format($this->format));
+    }
+}
+
+class Filter_DateGreaterThan extends Filter_AbstractDateFilter
+{
+    public function apply(Query $query)
+    {
+        $query->where('Order.date > ?', $this->date->format($this->format));
     }
 }
 
@@ -52,6 +62,9 @@ class OrderDataSource implements DataSource
     /** @var Filter[]|array */
     protected $filters = [];
 
+    /**
+     * @param Filter[] $filters
+     */
     public function setFilters(array $filters)
     {
         $this->filters = $filters;
