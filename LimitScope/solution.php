@@ -13,7 +13,7 @@ interface Observer {
     public function notify(Event $e);
 }
 
-abstract class StandardObservable {
+abstract class StandardObservable implements Observable {
     protected $observers = array();
 
     public function registerObserver(Observer $observer) {
