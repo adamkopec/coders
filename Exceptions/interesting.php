@@ -8,7 +8,7 @@ set_error_handler("exception_error_handler");
 strpos();
 
 /**
-Fatal error: Uncaught exception 'ErrorException' with message 'Wrong parameter count for strpos()' in /home/bjori/tmp/ex.php:8
+Fatal error: Uncaught exception 'ErrorException' with message 'Wrong parameter count for strpos()' in /path/interesting.php:8
 Stack trace:
 #0 [internal function]: exception_error_handler(2, 'Wrong parameter...', '/path...', 8, Array)
 #1 /path/interesting.php(8): strpos()
