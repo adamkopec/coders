@@ -38,7 +38,7 @@ if ($this->getAttachmentFromContent()) {
 
             $mime_type = $response->getHeader('Content-type');
 
-            $mime = new Empathy_Message_Part($image_content);
+            $mime = new Company_Message_Part($image_content);
             $mime->location = $url;
             $mime->type        = $mime_type;//.";\n\tname=\"".$pathinfo['basename']."\"";
             $mime->disposition = Zend_Mime::DISPOSITION_INLINE;
@@ -65,7 +65,7 @@ try {
     foreach($products as $product) {
         // sprawdzanie, czy produkt ma costam
         if(!in_array($product, $prdAttr)) {
-            throw new Empathy_Exception('product_incorrect_structure');
+            throw new Company_Exception('product_incorrect_structure');
         }
     }
 } catch(Exception $e) {
