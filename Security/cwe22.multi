@@ -1,0 +1,97 @@
+//Perl
+
+my $dataPath = "/users/cwe/profiles";
+my $username = param("user");
+my $profilePath = $dataPath . "/" . $username;
+
+open(my $fh, "<$profilePath") || ExitError("profile read error: $profilePath");
+print "<ul>\n";
+while (<$fh>) {
+    print "<li>$_</li>\n";
+}
+print "</ul>\n";
+
+#username = ../../../etc/passwd
+#profilePath = /users/cwe/profiles/../../../etc/passwd -> /etc/passwd  #(bada bum)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//Java - plik konfiguracyjny
+
+String filename = System.getProperty("com.domain.application.dictionaryFile");
+File dictionaryFile = new File(filename);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//Nieprawidłowa walidacja - Perl
+
+my $Username = GetUntrustedInput();
+$Username =~ s/\.\.\///; #zamienia pierwsze ".." na pusty ciąg, kolejne wystąpienia ignoruje
+my $filename = "/home/user/" . $Username;
+ReadAndSendFile($filename);
+
+#../../../etc/passwd (bada bum)
+
+
+
+
+
+
+
+
+
+
+
+
+//Nieprawidłowa walidacja - Java
+
+String path = getInputPath();
+if (path.startsWith("/safe_dir/"))
+{
+    File f = new File(path);
+    f.delete()
+}
+
+//ok, a co z /safe_dir/../important.dat ?
+
+
+
+
+//typowo: PHP: index.php
+
+<?php
+    $page = 'main.php';
+    if (isset($_GET['page'])) {
+        $page = $_GET['page'];
+    }
+
+    require 'header.php';
+    require "includes/$page";
+    require 'footer.php';
+
+    //ciekawy case? $page = '../index.php', rekurencja, DDoS
+?>

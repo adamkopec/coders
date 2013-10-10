@@ -61,16 +61,18 @@ if ($this->getAttachmentFromContent()) {
 // przyklad napisany z glowy - nie kojarze juz, w ktorym miejscu byl, pochodzacy z Rovese
 // wyrzucanie wyjatku jako sposob sterowania przeplywem operacji w petli - namiastka instrukcji goto
 $result = true;
-try {
+//try {
     foreach($products as $product) {
         // sprawdzanie, czy produkt ma costam
         if(!in_array($product, $prdAttr)) {
-            throw new Company_Exception('product_incorrect_structure');
+            //throw new Company_Exception('product_incorrect_structure');
+            goto finish;
         }
     }
-} catch(Exception $e) {
+finish:
+//} catch(Exception $e) {
     $result = false;
-}
+//}
 
 if($result) {
     // do something
