@@ -11,4 +11,3 @@ function runEmployeeQuery($dbName, $name)
 }
 
 $employeeRecord = runEmployeeQuery('EmployeeDB',$_GET['EmployeeName']);
-
