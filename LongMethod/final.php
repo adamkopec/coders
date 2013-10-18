@@ -180,6 +180,7 @@ class admin_Model_Marketing_DataSaver
 
         if (!is_null($this->fixer)) {
             $this->fixer->setData($this->data)->fix($isCreating);
+            $this->data = $this->fixer->getData();
         }
 
         //$this->_fixTypicalDataErrors($isCreating);
