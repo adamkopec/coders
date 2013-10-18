@@ -134,7 +134,7 @@ class admin_Model_Marketing_DataSaver {
                 $arrOPersAdmin = admin_Model_Users::getAdminList();
                 $oConfig = new EisConfiguration();
                 foreach($arrOPersAdmin as $oPerson) {
-                    $oMailer = new Empathy_Message_Adapter(null, null,'utf-8');
+                    $oMailer = new Company_Message_Adapter(null, null,'utf-8');
                     $oMailer->setTitle('change_marketing_status_title');
                     $oMailer->setEmail($oPerson->EifUser->usr_email);
                     $oMailer->setPersonId($oPerson->prs_id);
@@ -158,7 +158,7 @@ class admin_Model_Marketing_DataSaver {
 
             //czyszczenie cacha
             if ($clearCache) {
-                Empathy_Cache::clean(array('product_list', 'Cms'));
+                Company_Cache::clean(array('product_list', 'Cms'));
             }
         } catch(Exception $e) {
             $conn->rollback();

@@ -1,96 +1,40 @@
 <?php
-class admin_Model_Marketing_DataSaver {
+class admin_Model_Marketing_DataFixer
+{
+    protected $data;
 
-    protected $data = array();
-
-    protected $sendStatusChangeNotification = false;
-
-    public function __construct(array $data = array()) {
+    /**
+     * @param mixed $data
+     * @return $this
+     */
+    public function setData($data)
+    {
         $this->data = $data;
+        return $this;
     }
 
     /**
-     * @param boolean $sendStatusChangeNotification
+     * @return mixed
      */
-    public function setSendStatusChangeNotification($sendStatusChangeNotification)
+    public function getData()
     {
-        $this->sendStatusChangeNotification = $sendStatusChangeNotification;
+        return $this->data;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getSendStatusChangeNotification()
+    public function fix($isCreating)
     {
-        return $this->sendStatusChangeNotification;
-    }
-
-
-    public function saveForId($markId = null)
-    {
-        $clearCache = $this->_shouldClearCache();
-        $oMarketing = $this->_findOrCreateMarketing($markId);
-
-        if ($this->_needsApproval()) {
-            $this->_sendApprovalRequest();
+        if (is_null($this->data)) {
+            throw new Exception("Set data before trying to fix it!");
         }
 
-        $oMarketing->refresh(); //FIXME: purpose of refresh not known, leaving for backward compatibility
-
-        $oEisMarketingCondReact = new EisMarketingCondReact();
-        $oEisMarketingCondReact->saveCondReactForMarketing($this->data['action_params'], $oMarketing->mark_id);
-
-        if ($this->sendStatusChangeNotification) {
-            $this->_sendNotification();
-        }
-
-        if ($clearCache) {
-            Company_Cache::clean(array('product_list', 'Cms'));
-        }
-
-    }
-
-    protected function _shouldClearCache() {
-        $now = date('Y-m-d H:i:s');
-        return ($this->data['mark_begin_date'] < $now && $now < $this->data['mark_end_date']);
-    }
-
-    protected function _statusHasChanged()
-    {
-        return !empty($this->data['mark_status_id_old']) && $this->data['mark_status_id'] != $this->data['mark_status_id_old'];
-    }
-
-    protected function _findOrCreateMarketing($markId = null)
-    {
         $this->_fixNumericValues();
-
-        $oMarketing = null;
-        $isCreating = !is_null($markId);
-
-        if (!$isCreating) {
-            $oMarketing = Doctrine::getTable('EisMarketing')->find($markId);
-        } else {
-            if (!empty($this->data['mark_end_date'])) {
-                $this->_fixEndDate();
-            }
-        }
 
         //$this->data = $this->_filterDateTimeValues($this->data);
         $this->_filterDateTimeValues();
 
-        if (!is_object($oMarketing)) {
-            $oMarketing = new EisMarketing();
+        if ($isCreating && !empty($this->data['mark_end_date'])) {
+            $this->_fixEndDate();
         }
-
-        $this->data['mark_status_id_old'] = $oMarketing->mark_status_id;
-
-        if ($this->_statusHasChanged()) {
-            $oMarketing->mark_status_changed = true;
-            $oMarketing->mark_status_changed_date = date('Y-m-d H:i:s');
-        } else {
-            $oMarketing->mark_status_changed = false;
-        }
-
 
         $this->data['mark_serialized_conditions'] = serialize($this->data['action_params']);
 
@@ -98,56 +42,6 @@ class admin_Model_Marketing_DataSaver {
 
         if ($isCreating) {
             $this->_fixPriorityForVersionTable();
-        }
-
-        $oMarketing->fromArray($this->data);
-
-        $oMarketing->save();
-        return $oMarketing;
-    }
-
-    protected function _needsApproval()
-    {
-        return array_key_exists('fk_approve_prs_id', $this->data)
-        && $this->data['fk_approve_prs_id'] !== '';
-    }
-
-    protected function _sendApprovalRequest()
-    {
-        $oAuditPerson = Doctrine::getTable('EicPerson')->find($this->data['fk_approve_prs_id']);
-
-        desktop_Model_Writer::getInstance()->notify(
-            'promotion_new',
-            array(
-                'name' => $this->data['mark_name'] . ' - ' . $this->data['mark_code'],
-                'author' => ModelUser::getCurrentUserEmail(),
-                'person' => $oAuditPerson->prs_fname . ' ' . $oAuditPerson->prs_lname
-            )
-        );
-    }
-
-    protected function _sendNotification()
-    {
-        $arrOPersAdmin = admin_Model_Users::getAdminList();
-        $oConfig = new EisConfiguration();
-        foreach ($arrOPersAdmin as $oPerson) {
-            $oMailer = new Company_Message_Adapter(null, null, 'utf-8');
-            $oMailer->setTitle('change_marketing_status_title');
-            $oMailer->setEmail($oPerson->EifUser->usr_email);
-            $oMailer->setPersonId($oPerson->prs_id);
-            $oMailer->setFrom($oConfig->smartGetConfOption(EisConfiguration::CONF_APP_APPLICATION_EMAIL, false));
-            $oMailer->setNameFrom($oConfig->smartGetConfOption(EisConfiguration::CONF_APP_MAILER_NAME, false));
-            //$oMailer->setFrom(Zend_Registry::get('application_email'));
-            //$oMailer->setNameFrom(Zend_Registry::get('mailer_name'));
-            $oMailer->setTemplate('marketing_status_change'); //templatka w '_mail/changepass.txt.phtml
-            $oMailer->setContent(array(
-                'marketingName' => $this->data['mark_name'],
-                'oldStatus' => EisMarketingStatus::getStatusName($this->data['mark_status_id_old']),
-                'newStatus' => EisMarketingStatus::getStatusName($this->data['mark_status_id']),
-            ));
-            $oMailer->setMsgType('email');
-            $oMailer->setMsgStatus(true);
-            $oMailer->send();
         }
     }
 
@@ -195,6 +89,165 @@ class admin_Model_Marketing_DataSaver {
                     $this->data[$column] = $goodValue;
                 }
             }
+        }
+    }
+}
+
+
+class admin_Model_Marketing_DataSaver
+{
+    protected $data = array();
+    /** @var  admin_Model_Marketing_DataFixer */
+    protected $fixer;
+    protected $statusChangeNotificationEnabled = false;
+
+    public function __construct(array $data = array())
+    {
+        $this->data = $data;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getStatusChangeNotificationEnabled()
+    {
+        return $this->sendStatusChangeNotification;
+    }
+
+    /**
+     * @param boolean $sendStatusChangeNotification
+     */
+    public function setStatusChangeNotificationEnabled($sendStatusChangeNotification)
+    {
+        $this->sendStatusChangeNotification = $sendStatusChangeNotification;
+    }
+
+    /**
+     * @param \admin_Model_Marketing_DataFixer $fixer
+     */
+    public function setFixer($fixer)
+    {
+        $this->fixer = $fixer;
+    }
+
+    /**
+     * @return \admin_Model_Marketing_DataFixer
+     */
+    public function getFixer()
+    {
+        return $this->fixer;
+    }
+
+
+    public function saveForId($markId = null)
+    {
+        $clearCache = $this->_shouldClearCache();
+        $oMarketing = $this->_findOrCreateMarketing($markId);
+
+        if ($this->_needsApproval()) {
+            $this->_sendApprovalRequest();
+        }
+
+        $oMarketing->refresh(); //FIXME: purpose of refresh not known, leaving for backward compatibility
+
+        $oEisMarketingCondReact = new EisMarketingCondReact();
+        $oEisMarketingCondReact->saveCondReactForMarketing($this->data['action_params'], $oMarketing->mark_id);
+
+        if ($this->statusChangeNotificationEnabled && $this->_statusHasChanged()) {
+            $this->_sendNotification();
+        }
+
+        if ($clearCache) {
+            Company_Cache::clean(array('product_list', 'Cms'));
+        }
+
+    }
+
+    protected function _shouldClearCache()
+    {
+        $now = date('Y-m-d H:i:s');
+        return ($this->data['mark_begin_date'] < $now && $now < $this->data['mark_end_date']);
+    }
+
+    protected function _statusHasChanged()
+    {
+        return !empty($this->data['mark_status_id_old']) && $this->data['mark_status_id'] != $this->data['mark_status_id_old'];
+    }
+
+    protected function _findOrCreateMarketing($markId = null)
+    {
+        $isCreating = !is_null($markId);
+
+        if (!is_null($this->fixer)) {
+            $this->fixer->setData($this->data)->fix($isCreating);
+        }
+
+        //$this->_fixTypicalDataErrors($isCreating);
+
+        if (!$isCreating) {
+            $oMarketing = Doctrine::getTable('EisMarketing')->find($markId);
+        }
+
+        if (!is_object($oMarketing)) {
+            $oMarketing = new EisMarketing();
+        }
+
+        $this->data['mark_status_id_old'] = $oMarketing->mark_status_id;
+
+        if ($this->_statusHasChanged()) {
+            $oMarketing->mark_status_changed = true;
+            $oMarketing->mark_status_changed_date = date('Y-m-d H:i:s');
+        } else {
+            $oMarketing->mark_status_changed = false;
+        }
+
+        $oMarketing->fromArray($this->data);
+        $oMarketing->save();
+        return $oMarketing;
+    }
+
+
+
+    protected function _needsApproval()
+    {
+        return array_key_exists('fk_approve_prs_id', $this->data)
+        && $this->data['fk_approve_prs_id'] !== '';
+    }
+
+    protected function _sendApprovalRequest()
+    {
+        $oAuditPerson = Doctrine::getTable('EicPerson')->find($this->data['fk_approve_prs_id']);
+
+        desktop_Model_Writer::getInstance()->notify(
+            'promotion_new',
+            array(
+                'name' => $this->data['mark_name'] . ' - ' . $this->data['mark_code'],
+                'author' => ModelUser::getCurrentUserEmail(),
+                'person' => $oAuditPerson->prs_fname . ' ' . $oAuditPerson->prs_lname
+            )
+        );
+    }
+
+    protected function _sendNotification()
+    {
+        $arrOPersAdmin = admin_Model_Users::getAdminList();
+        $oConfig = new EisConfiguration();
+        foreach ($arrOPersAdmin as $oPerson) {
+            $oMailer = new Company_Message_Adapter(null, null, 'utf-8');
+            $oMailer->setTitle('change_marketing_status_title');
+            $oMailer->setEmail($oPerson->EifUser->usr_email);
+            $oMailer->setPersonId($oPerson->prs_id);
+            $oMailer->setFrom($oConfig->smartGetConfOption(EisConfiguration::CONF_APP_APPLICATION_EMAIL, false));
+            $oMailer->setNameFrom($oConfig->smartGetConfOption(EisConfiguration::CONF_APP_MAILER_NAME, false));
+            $oMailer->setTemplate('marketing_status_change'); //templatka w '_mail/changepass.txt.phtml
+            $oMailer->setContent(array(
+                'marketingName' => $this->data['mark_name'],
+                'oldStatus' => EisMarketingStatus::getStatusName($this->data['mark_status_id_old']),
+                'newStatus' => EisMarketingStatus::getStatusName($this->data['mark_status_id']),
+            ));
+            $oMailer->setMsgType('email');
+            $oMailer->setMsgStatus(true);
+            $oMailer->send();
         }
     }
 

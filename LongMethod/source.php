@@ -41,7 +41,7 @@ class admin_Model_Marketing {
 	        if(!empty($data['mark_status_id_old']) && $data['mark_status_id'] != $data['mark_status_id_old']) {
 	        	//$oEisMarketingStatus = new EisMarketingStatus();
 	        	//$boolChangeStatus = $oEisMarketingStatus->checkIfStatusCanBeChanged($oMarketing->mark_status_id, $data['mark_status_id']);
-		        $boolChangeStatus = true; //SK: zmiana na zyczenie kienta (TS0092)
+		        $boolChangeStatus = true; //SK: zmiana na zyczenie kienta (issue_number)
                         if (!$boolChangeStatus) {
                             return self::CHANGE_STATUS_ERR;
                         } else {
@@ -70,11 +70,11 @@ class admin_Model_Marketing {
 	        
             /*if($data['mark_for_logged'] || $data['mark_for_not_logged']) {
                 $data['fk_segment_person_id'] = null;
-            }*/ // TS0412
+            }*/ // issue_number
             
             if ($data['fk_segment_person_id']=='null') {
                 $data['fk_segment_person_id'] = null;
-            } // TS0412
+            } // issue_number
 
 	        if(!isset($markId)) { //DEFAULTOWY PRIORYTET MUSI BYC USTAWIONY RECZNIE DLA EisMarketingVersion
 		        $strQuery = "SELECT nextval( 'eis_marketing_mark_priority_seq' )";
@@ -127,7 +127,7 @@ class admin_Model_Marketing {
             	$arrOPersAdmin = admin_Model_Users::getAdminList();
             	$oConfig = new EisConfiguration();
             	foreach($arrOPersAdmin as $oPerson) {
-            		$oMailer = new Empathy_Message_Adapter(null, null,'utf-8');
+            		$oMailer = new Company_Message_Adapter(null, null,'utf-8');
             		$oMailer->setTitle('change_marketing_status_title');
                     $oMailer->setEmail($oPerson->EifUser->usr_email);
                     $oMailer->setPersonId($oPerson->prs_id);
@@ -151,7 +151,7 @@ class admin_Model_Marketing {
 
             //czyszczenie cacha
             if ($clearCache) {
-                Empathy_Cache::clean(array('product_list', 'Cms'));
+                Company_Cache::clean(array('product_list', 'Cms'));
             }
         } catch(Exception $e) {
             $conn->rollback();
