@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>PHP</ID>
+  <OriginalElement>\BusinessWriter</OriginalElement>
+  <nodes>
+    <node x="232.5" y="78.0">\BusinessWriter</node>
+    <node x="130.5" y="78.0">\Decorator</node>
+    <node x="190.75" y="0.0">\Business</node>
+    <node x="0.0" y="156.0">\BusinessSecurityDecorator</node>
+    <node x="182.0" y="156.0">\BusinessLoggingDecorator</node>
+    <node x="0.0" y="229.0">\Controller</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="\BusinessSecurityDecorator" target="\Decorator">
+      <point x="0.0" y="-14.0" />
+      <point x="81.0" y="131.0" />
+      <point x="151.0" y="131.0" />
+      <point x="-20.5" y="14.0" />
+    </edge>
+    <edge source="\Decorator" target="\Business">
+      <point x="0.0" y="-14.0" />
+      <point x="171.5" y="53.0" />
+      <point x="209.5" y="53.0" />
+      <point x="-18.75" y="14.0" />
+    </edge>
+    <edge source="\BusinessWriter" target="\Business">
+      <point x="0.0" y="-14.0" />
+      <point x="285.0" y="53.0" />
+      <point x="247.0" y="53.0" />
+      <point x="18.75" y="14.0" />
+    </edge>
+    <edge source="\BusinessLoggingDecorator" target="\Decorator">
+      <point x="0.0" y="-14.0" />
+      <point x="262.0" y="131.0" />
+      <point x="192.0" y="131.0" />
+      <point x="20.5" y="14.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="171.0" y="128.5" />
+  <SelectedNodes />
+  <Categories />
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

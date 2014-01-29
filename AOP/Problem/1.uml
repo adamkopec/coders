@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>PHP</ID>
+  <OriginalElement>\Controller</OriginalElement>
+  <nodes>
+    <node x="0.0" y="0.0">\BusinessWriter</node>
+    <node x="0.0" y="73.0">\Controller</node>
+  </nodes>
+  <notes />
+  <edges />
+  <settings layout="Hierarchic Group" zoom="1.0" x="52.5" y="50.5" />
+  <SelectedNodes />
+  <Categories />
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>PHP</ID>
+  <OriginalElement>\BusinessWriter</OriginalElement>
+  <nodes>
+    <node x="125.0" y="0.0">\BusinessWriter</node>
+    <node x="8.0" y="0.0">\Writer</node>
+    <node x="0.0" y="78.0">\FileWriter</node>
+    <node x="0.0" y="151.0">\Controller</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="\FileWriter" target="\Writer">
+      <point x="0.0" y="-14.0" />
+      <point x="0.0" y="14.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="115.0" y="89.5" />
+  <SelectedNodes />
+  <Categories />
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

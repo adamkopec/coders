@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>PHP</ID>
+  <OriginalElement>\FileWriter</OriginalElement>
+  <nodes>
+    <node x="0.0" y="229.0">\BusinessWriter</node>
+    <node x="161.5" y="0.0">\Writer</node>
+    <node x="270.0" y="156.0">\SecureLoggingFileWriter</node>
+    <node x="153.5" y="78.0">\FileWriter</node>
+    <node x="137.0" y="156.0">\SecureFileWriter</node>
+    <node x="150.0" y="229.0">\Controller</node>
+    <node x="0.0" y="156.0">\LoggingFileWriter</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="\SecureFileWriter" target="\FileWriter">
+      <point x="0.0" y="-14.0" />
+      <point x="0.0" y="14.0" />
+    </edge>
+    <edge source="\LoggingFileWriter" target="\FileWriter">
+      <point x="0.0" y="-14.0" />
+      <point x="58.5" y="131.0" />
+      <point x="166.83333333333331" y="131.0" />
+      <point x="-26.666666666666686" y="14.0" />
+    </edge>
+    <edge source="\FileWriter" target="\Writer">
+      <point x="0.0" y="-14.0" />
+      <point x="0.0" y="14.0" />
+    </edge>
+    <edge source="\SecureLoggingFileWriter" target="\FileWriter">
+      <point x="0.0" y="-14.0" />
+      <point x="345.0" y="131.0" />
+      <point x="220.16666666666669" y="131.0" />
+      <point x="26.666666666666686" y="14.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="133.5" y="128.5" />
+  <SelectedNodes />
+  <Categories />
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

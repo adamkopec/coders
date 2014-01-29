@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>PHP</ID>
+  <OriginalElement>\BusinessWriter</OriginalElement>
+  <nodes>
+    <node x="193.0" y="78.0">\BusinessWriter</node>
+    <node x="128.5" y="0.0">\Business</node>
+    <node x="0.0" y="78.0">\BusinessSecureLoggingProxy</node>
+    <node x="0.0" y="151.0">\Controller</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="\BusinessSecureLoggingProxy" target="\Business">
+      <point x="0.0" y="-14.0" />
+      <point x="86.5" y="53.0" />
+      <point x="147.25" y="53.0" />
+      <point x="-18.75" y="14.0" />
+    </edge>
+    <edge source="\BusinessWriter" target="\Business">
+      <point x="0.0" y="-14.0" />
+      <point x="245.5" y="53.0" />
+      <point x="184.75" y="53.0" />
+      <point x="18.75" y="14.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="149.0" y="89.5" />
+  <SelectedNodes />
+  <Categories />
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
